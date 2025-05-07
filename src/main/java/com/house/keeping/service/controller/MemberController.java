@@ -22,7 +22,7 @@ public class MemberController {
     private MemberService memberService;
 
     @Tag(name = "获取会员列表")
-    @GetMapping
+    @GetMapping("/query")
     public IPage<MemberEntity> getAllMembers(@RequestParam(defaultValue = "1") Integer current,
                                              @RequestParam(defaultValue = "10") Integer size,
                                              @RequestBody MemberEntity memberEntity) {
@@ -35,26 +35,26 @@ public class MemberController {
     }
 
     @Tag(name = "新增会员")
-    @PostMapping
+    @PostMapping("/add")
     public R addMember(@RequestBody MemberEntity member) {
         return new R(memberService.save(member));
     }
 
     @Tag(name = "删除会员")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public R deleteMember(@PathVariable Long id) {
         return new R(memberService.removeById(id));
     }
 
     @Tag(name = "修改会员")
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public R updateMember(@PathVariable Long id, @RequestBody MemberEntity member) {
         member.setId(id);
         return new R(memberService.updateById(member));
     }
 
     @Tag(name = "获取会员详情")
-    @GetMapping("/{id}")
+    @GetMapping("/info/{id}")
     public R getMember(@PathVariable Long id){
         return new R(memberService.getById(id));
     }

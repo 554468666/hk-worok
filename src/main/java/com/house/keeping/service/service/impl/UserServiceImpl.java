@@ -8,4 +8,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> implements UserService {
+    private UserMapper userMapper;
+
+    public UserEntity findByOpenId(String openId) {
+        return userMapper.findByOpenId(openId);
+    }
 }

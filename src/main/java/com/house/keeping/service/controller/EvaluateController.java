@@ -22,7 +22,7 @@ public class EvaluateController {
     private EvaluateService evaluateService;
 
     @Tag(name = "获取评价列表")
-    @GetMapping
+    @GetMapping("/query")
     public IPage<EvaluateEntity> getAllEvaluates(@RequestParam(defaultValue = "1") Integer current,
                                                  @RequestParam(defaultValue = "10") Integer size,
                                                  @RequestBody EvaluateEntity evaluateEntity) {
@@ -36,19 +36,19 @@ public class EvaluateController {
     }
 
     @Tag(name = "新增评价")
-    @PostMapping
+    @PostMapping("/add")
     public R addEvaluate(@RequestBody EvaluateEntity evaluate) {
         return new R(evaluateService.save(evaluate));
     }
 
     @Tag(name = "删除评价")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public R deleteEvaluate(@PathVariable Long id) {
         return new R(evaluateService.removeById(id));
     }
 
     @Tag(name = "修改评价")
-    @PutMapping("/{id}")
+        @PutMapping("/update/{id}")
     public R updateEvaluate(@PathVariable Long id, @RequestBody EvaluateEntity
             evaluate) {
         evaluate.setId(id);

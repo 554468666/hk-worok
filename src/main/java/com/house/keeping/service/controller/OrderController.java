@@ -23,7 +23,7 @@ public class OrderController {
     private OrderService orderService;
 
     @Tag(name = "获取订单列表")
-    @GetMapping
+    @GetMapping("/query")
     public IPage<OrderEntity> getAllOrders(@RequestParam(defaultValue = "1") Integer current,
                                            @RequestParam(defaultValue = "10") Integer size,
                                            @RequestBody OrderEntity orderEntity) {
@@ -39,19 +39,19 @@ public class OrderController {
     }
 
     @Tag(name = "新增订单")
-    @PostMapping
+    @PostMapping("/add")
     public R addOrder(@RequestBody OrderEntity order) {
         return new R(orderService.save(order));
     }
 
     @Tag(name = "删除订单")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public R deleteOrder(@PathVariable Long id) {
         return new R(orderService.removeById(id));
     }
 
     @Tag(name = "修改订单")
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public R updateOrder(@PathVariable Long id, @RequestBody OrderEntity order) {
         order.setId(id);
         return new R(orderService.updateById(order));

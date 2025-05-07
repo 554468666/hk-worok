@@ -16,33 +16,33 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 @Tag(name = "用户管理", description = "用户管理接口")
 public class UserController {
     @Autowired
     private UserService userService;
 
     @Tag(name = "新增用户")
-    @PostMapping
+    @PostMapping("/add")
     public R addUser(@RequestBody UserEntity user) {
         return new R(userService.save(user));
     }
 
     @Tag(name = "删除用户")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public R deleteUser(@PathVariable Integer id) {
         return  new R(userService.removeById(id));
     }
 
     @Tag(name = "修改用户")
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public R updateUser(@PathVariable Long id, @RequestBody UserEntity user) {
         user.setId(id);
         return new R(userService.updateById(user));
     }
 
     @Tag(name = "用户列表")
-    @GetMapping
+    @GetMapping("/query")
     public IPage<UserEntity> getAllUsers(@RequestParam(defaultValue = "1") Integer current,
                                          @RequestParam(defaultValue = "10") Integer size,
                                          @RequestBody UserEntity userEntity) {
@@ -59,7 +59,7 @@ public class UserController {
     }
 
     @Tag(name = "用户详情")
-    @GetMapping("/{id}")
+    @GetMapping("/info/{id}")
     public R getUserById(@PathVariable Integer id) {
         return new R<>(userService.getById(id));
     }
