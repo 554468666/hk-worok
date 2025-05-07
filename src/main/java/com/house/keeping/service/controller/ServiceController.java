@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/services")
-@Tag(name = "Service Management", description = "Service related operations")
+@Tag(name = "服务管理", description = "服务管理接口")
 public class ServiceController {
     @Autowired
     private ServiceService serviceService;

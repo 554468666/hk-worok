@@ -24,4 +24,4 @@ mybatis-plus:
 server:
   port: 8080
   servlet:
-    context-path: HK_APP
+    context-path: /HK_APP

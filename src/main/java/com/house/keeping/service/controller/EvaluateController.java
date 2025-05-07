@@ -35,16 +35,19 @@ public class EvaluateController {
         return evaluateService.page(page,wrapper);
     }
 
+    @Tag(name = "新增评价")
     @PostMapping
     public R addEvaluate(@RequestBody EvaluateEntity evaluate) {
         return new R(evaluateService.save(evaluate));
     }
 
+    @Tag(name = "删除评价")
     @DeleteMapping("/{id}")
     public R deleteEvaluate(@PathVariable Long id) {
         return new R(evaluateService.removeById(id));
     }
 
+    @Tag(name = "修改评价")
     @PutMapping("/{id}")
     public R updateEvaluate(@PathVariable Long id, @RequestBody EvaluateEntity
             evaluate) {

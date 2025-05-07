@@ -17,7 +17,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/users")
-@Tag(name = "User Management", description = "User related operations")
+@Tag(name = "用户管理", description = "用户管理接口")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -58,7 +58,7 @@ public class UserController {
         }
     }
 
-    @Tag(name = "服务详情")
+    @Tag(name = "用户详情")
     @GetMapping("/{id}")
     public R getUserById(@PathVariable Integer id) {
         return new R<>(userService.getById(id));
