@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  home-service:
+    image: home-service:latest
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - nacos
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/home_service?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootroot
+      - NACOS_DISCOVERY_SERVER-ADDR=nacos:8848
+      - NACOS_CONFIG_SERVER-ADDR=nacos:8848
+
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootroot
+      - MYSQL_DATABASE=home_service
+
+  nacos:
+    image: nacos/nacos:latest
+    ports:
+      - "8848:8848"
+    command: ["-m", "standalone"]

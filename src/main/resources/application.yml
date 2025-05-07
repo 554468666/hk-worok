@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: home-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/home_service?useSSL=false&serverTimezone=UTC&characterEncoding=utf-8
+    username: root
+    password: rootroot
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.example.homeservice.entity
+
+server:
+  port: 8080
+  servlet:
+    context-path: HK_APP
