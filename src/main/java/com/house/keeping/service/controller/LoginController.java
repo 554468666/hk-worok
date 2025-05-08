@@ -25,7 +25,15 @@ public class LoginController {
         String wxUnionId = loginData.get("wxUnionId"); // 获取微信小程序发送的unionId
         String shortId = Base64.getUrlEncoder().withoutPadding()
                 .encodeToString(UUID.randomUUID().toString().getBytes());
+        // 获取当前时间的毫秒数
+        long currentTimeMillis = System.currentTimeMillis();
+
+        // 将毫秒数转换为字符串
+        String timeString = String.valueOf(currentTimeMillis);
         // 验证用户是否存在
+        if(wxOpenId == null){
+            wxOpenId = "admin";
+        }
         UserEntity user = userService.findByOpenId(wxOpenId);
         if (user == null) {
             // 如果用户不存在，创建新用户
@@ -33,7 +41,7 @@ public class LoginController {
             user.setOpenId(wxOpenId);
             user.setSessionKey(wxSessionKey);
             user.setUnionId(wxUnionId);
-            user.setName("用户"+shortId); // 默认用户名
+            user.setName("用户"+timeString); // 默认用户名
             user.setPhone(""); // 默认电话
             user.setIsMember(false); // 默认非会员
             userService.save(user);

@@ -54,6 +54,21 @@ public class ServiceController {
         return serviceService.page(page,wrapper);
     }
 
+    @Tag(name = "热门服务列表")
+    @PostMapping("/query/hot")
+    public IPage<ServiceEntity> getAllHotServices(
+            @RequestParam(defaultValue = "1") Integer current,
+            @RequestParam(defaultValue = "4") Integer size,
+            @RequestBody ServiceEntity service) {
+        // 创建分页对象
+        Page<ServiceEntity> page = new Page<>(current, size);
+        LambdaQueryWrapper<ServiceEntity> wrapper = null;
+        if (!service.getIsHot()){
+            wrapper = new LambdaQueryWrapper<ServiceEntity>().eq(ServiceEntity::getIsHot,service.getIsHot());
+        }
+        return serviceService.page(page,wrapper);
+    }
+
     @Tag(name = "服务详情")
     @GetMapping("/info/{id}")
     public R getServiceById(@PathVariable Integer id) {
