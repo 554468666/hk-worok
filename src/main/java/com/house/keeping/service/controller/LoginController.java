@@ -1,6 +1,7 @@
 package com.house.keeping.service.controller;
 
 import com.house.keeping.service.entity.UserEntity;
+import com.house.keeping.service.service.RedisService;
 import com.house.keeping.service.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,8 @@ public class LoginController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private RedisService redisService;
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> loginData) {
@@ -58,6 +61,8 @@ public class LoginController {
         response.put("phone", user.getPhone());
         response.put("isMember", user.getIsMember());
 
+
+        redisService.setWithExpire("current_login_user",user.getName(),1800);
         return ResponseEntity.ok(response);
     }
 }

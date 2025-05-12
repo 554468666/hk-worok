@@ -5,7 +5,7 @@ import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.house.keeping.service.entity.SysConfigEntity;
 import com.house.keeping.service.service.ConfigService;
-import com.house.keeping.service.service.impl.RedisServiceImpl;
+import com.house.keeping.service.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpPost;
@@ -16,20 +16,15 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Set;
+
 
 @Slf4j
 @Component
@@ -44,7 +39,7 @@ public class PicuiApi {
     private ConfigService configService;
 
     @Autowired
-    private RedisServiceImpl redisService;
+    private RedisService redisService;
 
     /**
      * 获取临时token /images/tokens
@@ -148,6 +143,8 @@ public class PicuiApi {
         }
         return uploadUrl;
     }
+
+
 
     public String getUserToken(){
         LambdaQueryWrapper<SysConfigEntity> wrapper = new LambdaQueryWrapper<SysConfigEntity>();
