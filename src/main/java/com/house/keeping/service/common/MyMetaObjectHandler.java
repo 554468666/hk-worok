@@ -1,13 +1,19 @@
 package com.house.keeping.service.common;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
+import com.house.keeping.service.service.RedisService;
 import org.apache.ibatis.reflection.MetaObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
 @Component
 public class MyMetaObjectHandler implements MetaObjectHandler {
+
+    @Autowired
+    private RedisService redisService;
+
     @Override
     public void insertFill(MetaObject metaObject) {
         // 自动填充插入时间
@@ -35,6 +41,6 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     private String getCurrentUserId() {
         // 假设当前用户ID或用户名存储在某个地方，例如线程局部变量、SecurityContext 等
         // 这里返回一个示例值
-        return "current_user_id";
+        return redisService.get("current_login_user");
     }
 }
