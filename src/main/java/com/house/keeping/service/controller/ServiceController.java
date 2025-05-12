@@ -40,16 +40,16 @@ public class ServiceController {
     }
 
     @Tag(name = "服务列表")
-    @GetMapping("/query")
+    @PostMapping("/query")
     public IPage<ServiceEntity> getAllServices(
             @RequestParam(defaultValue = "1") Integer current,
             @RequestParam(defaultValue = "10") Integer size,
             @RequestBody ServiceEntity service) {
         // 创建分页对象
         Page<ServiceEntity> page = new Page<>(current, size);
-        LambdaQueryWrapper<ServiceEntity> wrapper = null;
+        LambdaQueryWrapper<ServiceEntity> wrapper = new LambdaQueryWrapper<ServiceEntity>();
         if (!service.getName().isEmpty()){
-            wrapper = new LambdaQueryWrapper<ServiceEntity>().eq(ServiceEntity::getName,service.getName());
+            wrapper.like(ServiceEntity::getName,service.getName());
         }
         return serviceService.page(page,wrapper);
     }

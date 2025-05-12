@@ -14,6 +14,12 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      database: 1
+
 
 mybatis-plus:
   configuration:
@@ -25,3 +31,4 @@ server:
   port: 8080
   servlet:
     context-path: /HK_APP
+
