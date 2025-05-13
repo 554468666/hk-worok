@@ -6,32 +6,34 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-@TableName("sys_config")
+@TableName("file_info")
 public class FileEntity {
+
     @TableId(type = IdType.AUTO)
     private Long id;
-    @TableField("`key`")  // 字段名也是MySQL关键字
-    private String key;
 
-    @TableField("`name`")  // 字段名也是MySQL关键字
-    private String name;
+    @TableField("file_key")
+    private String fileKey;
 
-    @TableField("`path`")
-    private String path;
+    @TableField("file_name")
+    private String fileName;
 
-    @TableField("`type`")
-    private String type;
+    @TableField("file_path")
+    private String filePath;
+
+    @TableField("file_type")
+    private String fileType;
 
     @TableField(fill = FieldFill.INSERT)
-    private Date create_time;
+    private Date createTime;
 
     @TableField(fill = FieldFill.INSERT_UPDATE)
-    private Date modify_time;
+    private Date modifyTime;
 
     @TableField(fill = FieldFill.INSERT)
-    private String create_user;
+    private String createUser;
 
     @TableField(fill = FieldFill.UPDATE)
-    private String update_user;
+    private String updateUser;
 
 }

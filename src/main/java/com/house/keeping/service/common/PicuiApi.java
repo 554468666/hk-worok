@@ -3,10 +3,13 @@ package com.house.keeping.service.common;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.house.keeping.service.entity.FileEntity;
 import com.house.keeping.service.entity.SysConfigEntity;
 import com.house.keeping.service.service.ConfigService;
+import com.house.keeping.service.service.FileImageService;
 import com.house.keeping.service.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -40,6 +43,9 @@ public class PicuiApi {
 
     @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private FileImageService fileImageService;
 
     /**
      * 获取临时token /images/tokens
@@ -94,8 +100,8 @@ public class PicuiApi {
         }
     }
 
-    public String picuiPutFile(File file)  {
-
+    public String picuiPutImage(File file)  {
+        FileEntity fileEntity = new FileEntity();
         if (!file.exists()) {
             log.info("文件不存在，请检查路径！");
             throw new RuntimeException("文件不存在，请检查路径！");
@@ -131,12 +137,20 @@ public class PicuiApi {
             // 发送请求并处理响应
             org.apache.http.HttpResponse response = httpClient.execute(uploadRequest);
             HttpEntity responseEntity = response.getEntity();
+            String responseString = "";
             if (responseEntity != null) {
-                String responseString = EntityUtils.toString(responseEntity);
+                responseString = EntityUtils.toString(responseEntity);
                 log.info("Response: " + responseString);
             }
-
+            JSONObject jsonObject = new JSONObject(responseString);
+            JSONObject dataObj = jsonObject.getJSONObject("data");
+            JSONObject linObj = dataObj.getJSONObject("links");
             log.info(response.toString());
+            fileEntity.setFileKey(dataObj.getStr("key"));
+            fileEntity.setFileName(dataObj.getStr("name"));
+            fileEntity.setFilePath(linObj.getStr("url"));
+            fileEntity.setFileType(FilenameUtils.getExtension(file.getName()));
+            fileImageService.createFile(fileEntity);
             return response.toString();
         } catch (Exception e) {
             e.printStackTrace();
@@ -144,7 +158,44 @@ public class PicuiApi {
         return uploadUrl;
     }
 
+    public void picuiDeleteImage(String fileKey){
+// 创建HttpClient实例
+        HttpClient client = HttpClient.newHttpClient();
+        String uri = picuiUrl+"/images/"+fileKey;
+        // 创建HttpRequest实例，设置请求方法为GET
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(uri))
+                .header("Authorization",getUserToken())
+                .header("Content-Type","application/json")
+                .header("Accept","application/json")
+                .header("User-Agent","PostmanRuntime/7.43.4")
+                .DELETE()
+                .build();
 
+        // 发送请求并获取响应
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // 获取响应状态码
+            int statusCode = response.statusCode();
+            log.info("Status Code: " + statusCode);
+
+            // 获取响应头
+            response.headers().map().forEach((k, v) -> System.out.println(k + ":" + v));
+
+            // 获取响应体
+            JSONObject responseBody = new JSONObject(response.body());
+            log.info("Response Body: " + responseBody);
+            if(!responseBody.getBool("status")){
+                throw new RuntimeException("picui 删除图片失败！"+responseBody.getStr("message"));
+            }
+            LambdaQueryWrapper<FileEntity> wrapper =
+                    new LambdaQueryWrapper<FileEntity>().eq(FileEntity::getFileKey,fileKey);
+            fileImageService.remove(wrapper);
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException("Http API ERROR:"+e);
+        }
+    }
 
     public String getUserToken(){
         LambdaQueryWrapper<SysConfigEntity> wrapper = new LambdaQueryWrapper<SysConfigEntity>();
