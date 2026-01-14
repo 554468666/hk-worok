@@ -8,6 +8,7 @@ import com.house.keeping.service.entity.OrderEntity;
 import com.house.keeping.service.entity.UserEntity;
 import com.house.keeping.service.service.OrderService;
 import com.house.keeping.service.util.R;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
@@ -15,15 +16,21 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * 订单管理控制器
+ */
 @RestController
-@RequestMapping("/api/order")
+@RequestMapping("/order")
 @Tag(name = "订单管理", description = "订单管理相关接口")
 public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    @Tag(name = "获取订单列表")
+    /**
+     * 获取订单列表
+     */
     @GetMapping("/query")
+    @Operation(summary = "获取订单列表", description = "分页获取订单列表")
     public IPage<OrderEntity> getAllOrders(@RequestParam(defaultValue = "1") Integer current,
                                            @RequestParam(defaultValue = "10") Integer size,
                                            @RequestBody OrderEntity orderEntity) {
@@ -38,22 +45,45 @@ public class OrderController {
         return orderService.page(page,wrapper);
     }
 
-    @Tag(name = "新增订单")
+    /**
+     * 新增订单
+     */
     @PostMapping("/add")
+    @Operation(summary = "新增订单", description = "创建新的订单")
     public R addOrder(@RequestBody OrderEntity order) {
         return new R(orderService.save(order));
     }
 
-    @Tag(name = "删除订单")
+    /**
+     * 删除订单
+     */
     @DeleteMapping("/delete/{id}")
+    @Operation(summary = "删除订单", description = "根据ID删除订单")
     public R deleteOrder(@PathVariable Long id) {
         return new R(orderService.removeById(id));
     }
 
-    @Tag(name = "修改订单")
+    /**
+     * 修改订单
+     */
     @PutMapping("/update/{id}")
+    @Operation(summary = "修改订单", description = "更新订单信息")
     public R updateOrder(@PathVariable Long id, @RequestBody OrderEntity order) {
         order.setId(id);
         return new R(orderService.updateById(order));
+    }
+
+    /**
+     * 获取订单详情
+     */
+    @GetMapping("/info/{id}")
+    @Operation(summary = "获取订单详情", description = "获取指定订单的详细信息")
+    public com.house.keeping.service.common.Result<OrderEntity> getOrderById(@PathVariable Long id) {
+        OrderEntity order = orderService.getById(id);
+        if (order == null) {
+            throw new com.house.keeping.service.common.BusinessException(
+                com.house.keeping.service.common.ErrorCode.BAD_REQUEST, "订单不存在");
+        }
+        return com.house.keeping.service.common.Result.success(order);
     }
 }

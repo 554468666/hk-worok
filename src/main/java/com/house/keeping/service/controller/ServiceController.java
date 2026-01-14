@@ -4,9 +4,12 @@ package com.house.keeping.service.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.house.keeping.service.entity.HotServiceInfoEntity;
 import com.house.keeping.service.entity.ServiceEntity;
+import com.house.keeping.service.service.HotServiceInfoService;
 import com.house.keeping.service.service.ServiceService;
 import com.house.keeping.service.util.R;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,33 +17,48 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/services")
+@RequestMapping("/services")
 @Tag(name = "服务管理", description = "服务管理接口")
 public class ServiceController {
     @Autowired
     private ServiceService serviceService;
 
-    @Tag(name = "新增服务")
+    @Autowired
+    private HotServiceInfoService hotServiceService;
+
+    /**
+     * 新增服务
+     */
     @PostMapping("/add")
+    @Operation(summary = "新增服务", description = "创建新的服务")
     public R addService(@RequestBody ServiceEntity service) {
         return new R(serviceService.save(service));
     }
 
-    @Tag(name = "删除服务")
+    /**
+     * 删除服务
+     */
     @DeleteMapping("/delete/{id}")
+    @Operation(summary = "删除服务", description = "根据ID删除服务")
     public R deleteService(@PathVariable Integer id) {
         return new R(serviceService.removeById(id));
     }
 
-    @Tag(name = "修改服务")
+    /**
+     * 修改服务
+     */
     @PutMapping("/update/{id}")
+    @Operation(summary = "修改服务", description = "更新服务信息")
     public R updateService(@PathVariable Integer id, @RequestBody ServiceEntity service) {
         service.setId(Long.valueOf(id));
         return new R(serviceService.updateById(service));
     }
 
-    @Tag(name = "服务列表")
+    /**
+     * 服务列表
+     */
     @PostMapping("/query")
+    @Operation(summary = "服务列表", description = "分页获取服务列表")
     public IPage<ServiceEntity> getAllServices(
             @RequestParam(defaultValue = "1") Integer current,
             @RequestParam(defaultValue = "10") Integer size,
@@ -54,23 +72,26 @@ public class ServiceController {
         return serviceService.page(page,wrapper);
     }
 
-    @Tag(name = "热门服务列表")
+    /**
+     * 热门服务列表
+     */
     @PostMapping("/query/hot")
-    public IPage<ServiceEntity> getAllHotServices(
+    @Operation(summary = "热门服务列表", description = "获取热门服务列表")
+    public R getAllHotServices(
             @RequestParam(defaultValue = "1") Integer current,
             @RequestParam(defaultValue = "4") Integer size,
             @RequestBody ServiceEntity service) {
         // 创建分页对象
-        Page<ServiceEntity> page = new Page<>(current, size);
-        LambdaQueryWrapper<ServiceEntity> wrapper = null;
-        if (!service.getIsHot()){
-            wrapper = new LambdaQueryWrapper<ServiceEntity>().eq(ServiceEntity::getIsHot,service.getIsHot());
-        }
-        return serviceService.page(page,wrapper);
+        Page<HotServiceInfoEntity> page = new Page<>(current, size);
+        LambdaQueryWrapper<HotServiceInfoEntity> wrapper = new LambdaQueryWrapper<HotServiceInfoEntity>();
+        return R.success(hotServiceService.page(page,wrapper));
     }
 
-    @Tag(name = "服务详情")
+    /**
+     * 服务详情
+     */
     @GetMapping("/info/{id}")
+    @Operation(summary = "服务详情", description = "根据ID获取服务详情")
     public R getServiceById(@PathVariable Integer id) {
 
         return new R(serviceService.getById(id));

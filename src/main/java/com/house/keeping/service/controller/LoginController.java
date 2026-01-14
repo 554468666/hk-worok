@@ -1,19 +1,34 @@
 package com.house.keeping.service.controller;
 
-import com.house.keeping.service.entity.UserEntity;
+import com.house.keeping.service.entity.*;
+import com.house.keeping.service.service.LoginService;
 import com.house.keeping.service.service.RedisService;
 import com.house.keeping.service.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * 登录控制器
+ */
 @RestController
 @RequestMapping("/api")
+@Tag(name = "登录管理", description = "登录相关接口")
 public class LoginController {
 
     @Autowired
@@ -21,48 +36,40 @@ public class LoginController {
     @Autowired
     private RedisService redisService;
 
-    @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> loginData) {
-        String wxOpenId = loginData.get("wxOpenId"); // 获取微信小程序发送的openId
-        String wxSessionKey = loginData.get("wxSessionKey"); // 获取微信小程序发送的sessionKey
-        String wxUnionId = loginData.get("wxUnionId"); // 获取微信小程序发送的unionId
-        String shortId = Base64.getUrlEncoder().withoutPadding()
-                .encodeToString(UUID.randomUUID().toString().getBytes());
-        // 获取当前时间的毫秒数
-        long currentTimeMillis = System.currentTimeMillis();
+    @Autowired
+    private LoginService loginService;
 
-        // 将毫秒数转换为字符串
-        String timeString = String.valueOf(currentTimeMillis);
-        // 验证用户是否存在
-        if(wxOpenId == null){
-            wxOpenId = "admin";
-        }
-        UserEntity user = userService.findByOpenId(wxOpenId);
-        if (user == null) {
-            // 如果用户不存在，创建新用户
-            user = new UserEntity();
-            user.setOpenId(wxOpenId);
-            user.setSessionKey(wxSessionKey);
-            user.setUnionId(wxUnionId);
-            user.setName("用户"+timeString); // 默认用户名
-            user.setPhone(""); // 默认电话
-            user.setIsMember(false); // 默认非会员
-            userService.save(user);
-        }
+    @Value("${hk.wechat.appid}")
+    private String appid;
 
-        // 创建登录凭证（token），这里简单返回一个随机字符串
-        String token = java.util.UUID.randomUUID().toString();
+    @Value("${hk.wechat.secret}")
+    private String secret;
 
-        // 返回用户信息和token
-        Map<String, Object> response = new HashMap<>();
-        response.put("token", token);
-        response.put("userId", user.getId());
-        response.put("name", user.getName());
-        response.put("phone", user.getPhone());
-        response.put("isMember", user.getIsMember());
-
-
-        redisService.setWithExpire("current_login_user",user.getName(),1800);
-        return ResponseEntity.ok(response);
+    /**
+     * Code 换 Session
+     */
+    @PostMapping("/code2session")
+    @Operation(summary = "Code换Session", description = "使用微信code换取session")
+    public WxSessionEntity code2Session(@RequestBody Map<String,String> body) {
+        return loginService.code2Session(body.get("code"));
     }
+
+    /**
+     * 手机号登录/注册
+     */
+    @PostMapping("/phoneLogin")
+    @Operation(summary = "手机号登录", description = "通过手机号进行登录或注册")
+    public Map<String,Object> phoneLogin(@RequestBody PhoneLoginDTO dto, HttpSession session) {
+        return loginService.phoneLogin(dto,session);
+    }
+
+    /**
+     * 检查用户手机号
+     */
+    @PostMapping("/checkUserPhone")
+    @Operation(summary = "检查用户手机号", description = "检查手机号是否已注册")
+    public Map<String, Object> checkUserPhone(@RequestBody Map<String, String> params) {
+        return loginService.checkUserPhone(params);
+    }
+
 }

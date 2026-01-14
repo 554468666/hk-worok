@@ -1,5 +1,7 @@
 package com.house.keeping.service.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -22,6 +24,7 @@ public class ServiceEntity {
     private Boolean isHot;
 
     @Schema(description = "服务产品上架时间")
+    @TableField(fill = FieldFill.INSERT)
     private java.util.Date createdAt;
 
     @Schema(description = "服务产品描述")
@@ -29,4 +32,8 @@ public class ServiceEntity {
 
     @Schema(description = "服务产品图片路径")
     private String imagePath;
+
+    @Schema(description = "创建用户")
+    @TableField(fill = FieldFill.INSERT)
+    private String createUser;
 }

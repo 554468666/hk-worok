@@ -6,9 +6,9 @@
     <select id="findByOpenId" resultType="com.house.keeping.service.entity.UserEntity">
         SELECT * FROM user
         <where>
-            <if test="openId != null and openId != ''">
+                1 = 1
                 AND open_id = #{openId}
-            </if>
+
         </where>
     </select>
 </mapper>

@@ -2,7 +2,7 @@ spring:
   application:
     name: home-service
   datasource:
-    url: jdbc:mysql://localhost:3306/home_service?useSSL=false&serverTimezone=UTC&characterEncoding=utf-8
+    url: jdbc:mysql://localhost:3306/home_service?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf-8
     username: root
     password: rootroot
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -19,16 +19,44 @@ spring:
       host: 127.0.0.1
       port: 6379
       database: 1
-
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 100MB
+      enabled: true
 
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.example.homeservice.entity
+  type-aliases-package: com.house.keeping.service.entity
 
 server:
   port: 8080
   servlet:
-    context-path: /HK_APP
+    context-path: /api
 
+# 文件上传配置
+upload:
+  path: ./uploads
+
+# 系统配置
+hk:
+  site:
+    name: Housekeeping管理系统
+    version: 1.0.0
+  maintenance: false
+  registration:
+    enabled: true
+  features:
+    sms-login: true
+    wechat-login: true
+    email-notification: true
+  wechat:
+    appid: "wx60dce261b72c4030"
+    secret: "ba8422de05c6f8331173375c4ce24443"
+
+# JWT配置
+jwt:
+  secret: hk_backend_demo_secret_key_2026
+  expire: 86400

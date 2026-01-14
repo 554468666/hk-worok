@@ -69,4 +69,19 @@ public class R<T> {
                 ", data=" + data +
                 '}';
     }
+
+    public static R success(Object data) {
+        R result = new R();
+        result.setStatus("200");
+        result.setMessage("成功");
+        result.setData(data);
+        return result;
+    }
+    public static R error(String message) {
+        R result = new R();
+        result.setStatus("999");
+        result.setMessage(message);
+        result.setData(null);
+        return result;
+    }
 }
